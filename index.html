@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ULTRA TASK - Earn Coins</title>
+    
+    <!-- Firebase Modular SDK v12.18.0 -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js"
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    
+    <style>
+        /* ===== COMPLETE CSS ===== */
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E55A2B;
+            --secondary: #004E89;
+            --bg-dark: #0A0A0A;
+            --bg-card: #1A1A1A;
+            --bg-card-hover: #252525;
+            --text: #FFFFFF;
+            --text-muted: #AAAAAA;
+            --border: #333333;
+            --success: #00C853;
+            --danger: #FF1744;
+            --warning: #FFD600;
+            --radius: 12px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.3);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* ===== AUTH SCREENS ===== */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--bg-dark), #1a0a0a);
+        }
+
+        .auth-box {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .auth-box .logo {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 30px;
+        }
+
+        .auth-box .logo span {
+            color: var(--text);
+        }
+
+        .auth-box h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .auth-box p.sub {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .auth-box .input-group {
+            margin-bottom: 16px;
+        }
+
+        .auth-box .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .auth-box .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .auth-box .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .auth-box .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .auth-box .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .auth-box .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-box .btn-google {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        .auth-box .btn-google:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.2);
+        }
+
+        .auth-box .switch-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .auth-box .switch-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .auth-box .error-msg {
+            background: rgba(255,23,68,0.15);
+            color: var(--danger);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .auth-box .success-msg {
+            background: rgba(0,200,83,0.15);
+            color: var(--success);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        /* ===== MAIN APP ===== */
+        #app {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .top-bar .brand {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .top-bar .brand span {
+            color: var(--text);
+        }
+
+        .top-bar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .top-bar .user-info .coins {
+            background: var(--bg-dark);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--warning);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .top-bar .user-info .coins:hover {
+            border-color: var(--warning);
+        }
+
+        .top-bar .user-info .level-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .top-bar .user-info .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .top-bar .user-info .avatar:hover {
+            border-color: var(--primary);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 4px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+        }
+
+        .nav-tabs .tab {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+        }
+
+        .nav-tabs .tab:hover {
+            color: var(--text);
+            background: var(--bg-dark);
+        }
+
+        .nav-tabs .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .page {
+            display: none;
+            animation: fadeUp 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .stats-grid .stat-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .stats-grid .stat-card .number {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .stats-grid .stat-card .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-grid .stat-card .number.gold { color: var(--warning); }
+        .stats-grid .stat-card .number.green { color: var(--success); }
+
+        .slider-container {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            position: relative;
+            height: 200px;
+        }
+
+        .slider-container .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+        }
+
+        .slider-container .slide.active {
+            opacity: 1;
+        }
+
+        .slider-container .slide h2 {
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .slider-container .slide p {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 8px;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .slider-dots .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .slider-dots .dot.active {
+            background: white;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+        }
+
+        .section-header .view-all {
+            color: var(--primary);
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .task-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .task-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .task-card .category-tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .task-card h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .task-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .task-card .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-card .task-meta .reward {
+            font-weight: 700;
+            color: var(--warning);
+            font-size: 16px;
+        }
+
+        .task-card .task-meta .status {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .task-card .task-meta .status.active {
+            background: rgba(0,200,83,0.15);
+            color: var(--success);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            animation: fadeUp 0.3s ease;
+        }
+
+        .modal-box .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-box .close-btn:hover {
+            color: var(--text);
+        }
+
+        .modal-box h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .modal-box .modal-category {
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .modal-box .modal-reward {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--warning);
+            margin: 16px 0;
+        }
+
+        .modal-box .modal-desc {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-box .modal-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .modal-box .modal-details .detail-item {
+            background: var(--bg-dark);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .modal-box .modal-details .detail-item .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .modal-box .modal-details .detail-item .value {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .modal-box .btn-start {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-box .btn-start:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .wallet-balance {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            border-radius: var(--radius);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .wallet-balance .amount {
+            font-size: 48px;
+            font-weight: 900;
+        }
+
+        .wallet-balance .label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .wallet-balance .bonus {
+            font-size: 18px;
+            color: var(--warning);
+            margin-top: 8px;
+        }
+
+        .wallet-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .wallet-actions .btn-action {
+            padding: 14px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .wallet-actions .btn-action:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .wallet-actions .btn-action .icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .transaction-item {
+            background: var(--bg-card);
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transaction-item .left .type {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .transaction-item .left .date {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .transaction-item .right .amount {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .transaction-item .right .amount.positive {
+            color: var(--success);
+        }
+
+        .transaction-item .right .amount.negative {
+            color: var(--danger);
+        }
+
+        .quest-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 12px;
+            transition: var(--transition);
+        }
+
+        .quest-card:hover {
+            border-color: var(--primary);
+        }
+
+        .quest-card .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .quest-card .quest-header h3 {
+            font-size: 16px;
+        }
+
+        .quest-card .quest-header .quest-reward {
+            color: var(--warning);
+            font-weight: 700;
+        }
+
+        .quest-card .quest-progress {
+            margin-top: 12px;
+        }
+
+        .quest-card .quest-progress .bar {
+            height: 6px;
+            background: var(--bg-dark);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .quest-card .quest-progress .bar .fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .quest-card .quest-progress .text {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 6px;
+            transition: var(--transition);
+        }
+
+        .leaderboard-item:hover {
+            border-color: var(--primary);
+        }
+
+        .leaderboard-item .rank {
+            font-size: 20px;
+            font-weight: 900;
+            width: 36px;
+            text-align: center;
+        }
+
+        .leaderboard-item .rank.gold { color: #FFD700; }
+        .leaderboard-item .rank.silver { color: #C0C0C0; }
+        .leaderboard-item .rank.bronze { color: #CD7F32; }
+
+        .leaderboard-item .info {
+            flex: 1;
+        }
+
+        .leaderboard-item .info .name {
+            font-weight: 600;
+        }
+
+        .leaderboard-item .info .level {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .leaderboard-item .coins {
+            font-weight: 700;
+            color: var(--warning);
+        }
+
+        .profile-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 30px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .profile-card .avatar-big {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 900;
+            margin: 0 auto 12px;
+            border: 3px solid var(--primary);
+        }
+
+        .profile-card .name {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .profile-card .email {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .profile-card .referral-code {
+            background: var(--bg-dark);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: inline-block;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            cursor: pointer;
+            border: 1px dashed var(--border);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            #app { padding: 12px; padding-bottom: 80px; }
+            .top-bar { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+            .top-bar .brand { font-size: 16px; }
+            .top-bar .user-info .coins { font-size: 12px; padding: 4px 10px; }
+            .top-bar .user-info .level-badge { font-size: 10px; padding: 2px 8px; }
+            .nav-tabs .tab { padding: 8px 12px; font-size: 12px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .task-grid { grid-template-columns: 1fr; }
+            .wallet-balance .amount { font-size: 32px; }
+            .modal-box { padding: 20px; margin: 10px; }
+            .modal-box .modal-details { grid-template-columns: 1fr; }
+            .wallet-actions { grid-template-columns: 1fr; }
+            .slider-container { height: 150px; }
+            .slider-container .slide h2 { font-size: 20px; }
+        }
+
+        @media (max-width: 480px) {
+            .top-bar .user-info .level-badge { display: none; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .stats-grid .stat-card { padding: 12px; }
+            .stats-grid .stat-card .number { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== AUTH CONTAINER ===== -->
+<div id="authContainer" class="auth-container">
+    <div class="auth-box">
+        <div class="logo">ULTRA <span>TASK</span></div>
+        
+        <div id="authError" class="error-msg"></div>
+        <div id="authSuccess" class="success-msg"></div>
+
+        <!-- Login Form -->
+        <div id="loginForm">
+            <h2>Welcome Back</h2>
+            <p class="sub">Login to continue earning coins</p>
+            
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="you@email.com" />
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" />
+            </div>
+            
+            <button class="btn-primary" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            
+            <button class="btn-google" id="googleBtn">
+                <i class="fab fa-google"></i> Continue with Google
+            </button>
+            
+            <div class="switch-link">
+                Don't have an account? <a id="showSignup">Sign Up</a>
+            </div>
+            <div class="switch-link" style="margin-top:4px;font-size:12px;">
+                <a id="showForgot">Forgot Password?</a>
+            </div>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signupForm" style="display:none;">
+            <h2>Create Account</h2>
+            <p class="sub">Start earning coins today</p>
+            
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="signupName" placeholder="John Doe" />
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="signupEmail" placeholder="you@email.com" />
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="signupPassword" placeholder="Min 6 characters" />
+            </div>
+            <div class="input-group">
+                <label>Referral Code (Optional)</label>
+                <input type="text" id="signupReferral" placeholder="Enter referral code" />
+            </div>
+            
+            <button class="btn-primary" id="signupBtn">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+            
+            <button class="btn-google" id="googleBtn2">
+                <i class="fab fa-google"></i> Continue with Google
+            </button>
+            
+            <div class="switch-link">
+                Already have an account? <a id="showLogin">Login</a>
+            </div>
+        </div>
+
+        <!-- Forgot Password -->
+        <div id="forgotForm" style="display:none;">
+            <h2>Reset Password</h2>
+            <p class="sub">We'll send you a reset link</p>
+            
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="forgotEmail" placeholder="you@email.com" />
+            </div>
+            
+            <button class="btn-primary" id="forgotBtn">
+                <i class="fas fa-envelope"></i> Send Reset Link
+            </button>
+            
+            <div class="switch-link">
+                <a id="backToLogin">Back to Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app">
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div class="brand">ULTRA <span>TASK</span></div>
+        <div class="user-info">
+            <span class="level-badge" id="levelBadge">Lv.1</span>
+            <span class="coins" id="coinDisplay">
+                <i class="fas fa-coins"></i> <span id="coinAmount">0</span>
+            </span>
+            <div class="avatar" id="userAvatar">U</div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-tabs" id="navTabs">
+        <button class="tab active" data-page="home">Home</button>
+        <button class="tab" data-page="tasks">Tasks</button>
+        <button class="tab" data-page="quests">Quests</button>
+        <button class="tab" data-page="wallet">Wallet</button>
+        <button class="tab" data-page="leaderboard">Top</button>
+        <button class="tab" data-page="profile">Profile</button>
+    </nav>
+
+    <!-- ===== HOME PAGE ===== -->
+    <div id="page-home" class="page active">
+        <div class="stats-grid" id="homeStats">
+            <div class="stat-card">
+                <div class="number" id="statTasks">0</div>
+                <div class="label">Tasks Done</div>
+            </div>
+            <div class="stat-card">
+                <div class="number gold" id="statCoins">0</div>
+                <div class="label">Coins Earned</div>
+            </div>
+            <div class="stat-card">
+                <div class="number green" id="statStreak">0</div>
+                <div class="label">Day Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="statLevel">1</div>
+                <div class="label">Level</div>
+            </div>
+        </div>
+
+        <div class="slider-container" id="sliderContainer">
+            <div class="slide active">
+                <div>
+                    <h2>🚀 Complete Tasks & Earn Coins</h2>
+                    <p>112+ task types available</p>
+                </div>
+            </div>
+            <div class="slide">
+                <div>
+                    <h2>🏆 Win Tournaments</h2>
+                    <p>Compete & win big rewards</p>
+                </div>
+            </div>
+            <div class="slide">
+                <div>
+                    <h2>👥 Refer Friends</h2>
+                    <p>Earn bonus coins per referral</p>
+                </div>
+            </div>
+            <div class="slider-dots" id="sliderDots">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+                <span class="dot" data-index="2"></span>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>🔥 Recommended Tasks</h2>
+            <span class="view-all" id="viewAllTasks">View All →</span>
+        </div>
+        <div class="task-grid" id="recommendedTasks"></div>
+    </div>
+
+    <!-- ===== TASKS PAGE ===== -->
+    <div id="page-tasks" class="page">
+        <div class="section-header">
+            <h2>📋 All Tasks</h2>
+            <div>
+                <select id="taskCategoryFilter" style="background:var(--bg-card);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:8px;">
+                    <option value="all">All Categories</option>
+                    <option value="Website Traffic">Website Traffic</option>
+                    <option value="Video Content">Video Content</option>
+                    <option value="Social Media">Social Media</option>
+                    <option value="Survey & Feedback">Survey & Feedback</option>
+                    <option value="App Download">App Download</option>
+                    <option value="Offerwall">Offerwall</option>
+                    <option value="Gaming">Gaming</option>
+                    <option value="Special Offers">Special Offers</option>
+                    <option value="Advanced Tasks">Advanced Tasks</option>
+                </select>
+            </div>
+        </div>
+        <div class="task-grid" id="allTasks"></div>
+    </div>
+
+    <!-- ===== QUESTS PAGE ===== -->
+    <div id="page-quests" class="page">
+        <div class="section-header"><h2>🎯 Quests</h2></div>
+        <div id="questList"></div>
+    </div>
+
+    <!-- ===== WALLET PAGE ===== -->
+    <div id="page-wallet" class="page">
+        <div class="wallet-balance">
+            <div class="label">Your Balance</div>
+            <div class="amount" id="walletBalance">0</div>
+            <div class="bonus">Bonus: <span id="walletBonus">0</span> coins</div>
+        </div>
+        
+        <div class="wallet-actions">
+            <div class="btn-action" id="watchAdBtn">
+                <span class="icon">📺</span> Watch Ad
+            </div>
+            <div class="btn-action" id="withdrawBtn">
+                <span class="icon">💰</span> Withdraw
+            </div>
+        </div>
+
+        <h3 style="margin:16px 0 12px;">📜 Transaction History</h3>
+        <div class="transaction-list" id="transactionList"></div>
+    </div>
+
+    <!-- ===== LEADERBOARD PAGE ===== -->
+    <div id="page-leaderboard" class="page">
+        <div class="section-header"><h2>🏆 Top Players</h2></div>
+        <div id="leaderboardList"></div>
+    </div>
+
+    <!-- ===== PROFILE PAGE ===== -->
+    <div id="page-profile" class="page">
+        <div class="profile-card">
+            <div class="avatar-big" id="profileAvatar">U</div>
+            <div class="name" id="profileName">User</div>
+            <div class="email" id="profileEmail">user@email.com</div>
+            <div style="margin:12px 0;">
+                Level <span id="profileLevel">1</span> • XP <span id="profileXP">0</span>
+            </div>
+            <div class="referral-code" id="referralCode">
+                📋 <span id="referralCodeText">ABC123</span>
+            </div>
+            <button class="btn-primary" id="logoutBtn" style="background:var(--danger);">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TASK DETAIL MODAL ===== -->
+<div class="modal-overlay" id="taskModal">
+    <div class="modal-box">
+        <button class="close-btn" id="closeTaskModal">&times;</button>
+        <div class="modal-category" id="modalCategory">Category</div>
+        <h2 id="modalTitle">Task Title</h2>
+        <div class="modal-reward" id="modalReward">🪙 25 coins</div>
+        <p class="modal-desc" id="modalDesc">Description goes here.</p>
+        <div class="modal-details" id="modalDetails">
+            <div class="detail-item">
+                <div class="label">Required Time</div>
+                <div class="value" id="modalTime">30s</div>
+            </div>
+            <div class="detail-item">
+                <div class="label">Status</div>
+                <div class="value" id="modalStatus">Active</div>
+            </div>
+        </div>
+        <button class="btn-start" id="modalStartBtn">
+            <i class="fas fa-play"></i> Start Task
+        </button>
+    </div>
+</div>
+
+<!-- ===== TASK TRACKING MODAL ===== -->
+<div class="modal-overlay" id="trackingModal">
+    <div class="modal-box">
+        <h2 id="trackingTitle">⏳ Task in Progress</h2>
+        <p id="trackingDesc">Complete the task below</p>
+        <div style="margin:20px 0;text-align:center;">
+            <div id="trackingTimer" style="font-size:48px;font-weight:900;color:var(--primary);">30s</div>
+            <div style="margin-top:8px;color:var(--text-muted);font-size:14px;">Time Remaining</div>
+        </div>
+        <div style="background:var(--bg-dark);border-radius:8px;padding:16px;margin-bottom:16px;">
+            <p id="trackingTarget" style="word-break:break-all;">Target URL: example.com</p>
+        </div>
+        <button class="btn-start" id="trackingCompleteBtn" disabled>
+            <i class="fas fa-check"></i> Complete Task
+        </button>
+        <button class="btn-start" id="cancelTrackingBtn" style="background:var(--danger);margin-top:8px;">
+            Cancel
+        </button>
+    </div>
+</div>
+
+<script type="module">
+// ===== FIREBASE MODULAR SDK IMPORTS =====
+import { initializeApp } from "firebase/app";
+import { 
+    getAuth, 
+    onAuthStateChanged, 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword,
+    signInWithPopup,
+    GoogleAuthProvider,
+    sendPasswordResetEmail,
+    signOut
+} from "firebase/auth";
+import {
+    getFirestore,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    query,
+    where,
+    orderBy,
+    limit,
+    serverTimestamp,
+    increment,
+    onSnapshot
+} from "firebase/firestore";
+import {
+    getDatabase,
+    ref,
+    set,
+    remove,
+    onValue,
+    serverTimestamp as rtdbTimestamp
+} from "firebase/database";
+
+// ===== FIREBASE CONFIG =====
+const firebaseConfig = {
+    apiKey: "AIzaSyAPn9s94CwWygUYjE-2OmPomIjj-fciJb0",
+    authDomain: "turnament-c67c2.firebaseapp.com",
+    databaseURL: "https://turnament-c67c2-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "turnament-c67c2",
+    storageBucket: "turnament-c67c2.firebasestorage.app",
+    messagingSenderId: "454386717625",
+    appId: "1:454386717625:web:b2a51c84e0b47082941c68"
+};
+
+// ===== INITIALIZE FIREBASE =====
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const rtdb = getDatabase(app);
+
+// ===== GLOBAL STATE =====
+let currentUser = null;
+let userData = null;
+let tasksCache = [];
+let currentTask = null;
+let trackingInterval = null;
+let trackingTimeLeft = 0;
+let tasksUnsubscribe = null;
+let userUnsubscribe = null;
+
+// ===== DOM REFS =====
+const $ = (id) => document.getElementById(id);
+const authContainer = $('authContainer');
+const appContainer = $('app');
+const authError = $('authError');
+const authSuccess = $('authSuccess');
+
+// ===== AUTH UI FUNCTIONS =====
+function showAuth(form) {
+    $('loginForm').style.display = 'none';
+    $('signupForm').style.display = 'none';
+    $('forgotForm').style.display = 'none';
+    authError.style.display = 'none';
+    authSuccess.style.display = 'none';
+    
+    if (form === 'login') $('loginForm').style.display = 'block';
+    else if (form === 'signup') $('signupForm').style.display = 'block';
+    else if (form === 'forgot') $('forgotForm').style.display = 'block';
+}
+
+function showAuthError(msg) {
+    authError.textContent = msg;
+    authError.style.display = 'block';
+}
+
+function showAuthSuccess(msg) {
+    authSuccess.textContent = msg;
+    authSuccess.style.display = 'block';
+}
+
+// ===== AUTH FUNCTIONS =====
+async function handleLogin() {
+    const email = $('loginEmail').value.trim();
+    const password = $('loginPassword').value;
+    
+    if (!email || !password) {
+        showAuthError('Please fill in all fields');
+        return;
+    }
+    
+    try {
+        $('loginBtn').disabled = true;
+        await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+        showAuthError(error.message);
+        $('loginBtn').disabled = false;
+    }
+}
+
+async function handleSignup() {
+    const name = $('signupName').value.trim();
+    const email = $('signupEmail').value.trim();
+    const password = $('signupPassword').value;
+    const referral = $('signupReferral').value.trim().toUpperCase();
+    
+    if (!name || !email || !password) {
+        showAuthError('Please fill in all fields');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showAuthError('Password must be at least 6 characters');
+        return;
+    }
+    
+    try {
+        $('signupBtn').disabled = true;
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        
+        const userRef = doc(db, 'users', cred.user.uid);
+        await updateDoc(userRef, {
+            name: name,
+            email: email,
+            coins: 100,
+            bonusCoins: 0,
+            level: 1,
+            xp: 0,
+            tasksCompleted: 0,
+            streakDays: 1,
+            referralCode: generateReferralCode(),
+            referredBy: referral || '',
+            isBlocked: false,
+            createdAt: serverTimestamp(),
+            lastLogin: serverTimestamp()
+        });
+        
+        if (referral) {
+            const refQuery = await getDocs(query(
+                collection(db, 'users'),
+                where('referralCode', '==', referral)
+            ));
+            if (!refQuery.empty) {
+                const referrer = refQuery.docs[0];
+                await updateDoc(doc(db, 'users', referrer.id), {
+                    coins: increment(50)
+                });
+                await addDoc(collection(db, 'referrals'), {
+                    referrerId: referrer.id,
+                    referredUserId: cred.user.uid,
+                    bonusEarned: 50,
+                    status: 'completed',
+                    createdAt: serverTimestamp()
+                });
+            }
+        }
+        
+        showAuthSuccess('Account created successfully!');
+        $('signupBtn').disabled = false;
+        
+    } catch (error) {
+        showAuthError(error.message);
+        $('signupBtn').disabled = false;
+    }
+}
+
+async function handleGoogleLogin() {
+    try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+    } catch (error) {
+        showAuthError(error.message);
+    }
+}
+
+async function handleForgotPassword() {
+    const email = $('forgotEmail').value.trim();
+    if (!email) {
+        showAuthError('Please enter your email');
+        return;
+    }
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showAuthSuccess('Password reset email sent! Check your inbox.');
+        setTimeout(() => showAuth('login'), 3000);
+    } catch (error) {
+        showAuthError(error.message);
+    }
+}
+
+function generateReferralCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+}
+
+// ===== EVENT LISTENERS =====
+$('loginBtn').addEventListener('click', handleLogin);
+$('signupBtn').addEventListener('click', handleSignup);
+$('googleBtn').addEventListener('click', handleGoogleLogin);
+$('googleBtn2').addEventListener('click', handleGoogleLogin);
+$('forgotBtn').addEventListener('click', handleForgotPassword);
+
+$('showSignup').addEventListener('click', () => showAuth('signup'));
+$('showLogin').addEventListener('click', () => showAuth('login'));
+$('showForgot').addEventListener('click', () => showAuth('forgot'));
+$('backToLogin').addEventListener('click', () => showAuth('login'));
+
+// Enter key handlers
+$('loginEmail').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
+$('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
+$('signupEmail').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSignup(); });
+$('signupPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSignup(); });
+
+// ===== AUTH STATE LISTENER =====
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUser = user;
+        authContainer.style.display = 'none';
+        appContainer.style.display = 'block';
+        
+        // Load user data with real-time listener
+        setupUserListener(user.uid);
+        
+        // Load tasks with real-time listener
+        setupTasksListener();
+        
+        // Load leaderboard
+        loadLeaderboard();
+        
+        // Load transactions
+        loadTransactions();
+        
+        // Update online status
+        set(ref(rtdb, 'online_users/' + user.uid), {
+            name: userData?.name || 'User',
+            lastActive: rtdbTimestamp(),
+            status: 'online'
+        });
+        
+        $('loginBtn').disabled = false;
+        $('signupBtn').disabled = false;
+        
+    } else {
+        currentUser = null;
+        authContainer.style.display = 'flex';
+        appContainer.style.display = 'none';
+        
+        if (userUnsubscribe) {
+            userUnsubscribe();
+            userUnsubscribe = null;
+        }
+        if (tasksUnsubscribe) {
+            tasksUnsubscribe();
+            tasksUnsubscribe = null;
+        }
+        if (window._refreshInterval) clearInterval(window._refreshInterval);
+    }
+});
+
+// ===== REAL-TIME USER LISTENER =====
+function setupUserListener(uid) {
+    if (userUnsubscribe) userUnsubscribe();
+    
+    const userRef = doc(db, 'users', uid);
+    userUnsubscribe = onSnapshot(userRef, (docSnap) => {
+        if (docSnap.exists()) {
+            userData = docSnap.data();
+            updateUI();
+        }
+    }, (error) => {
+        console.error('User listener error:', error);
+    });
+}
+
+// ===== REAL-TIME TASKS LISTENER =====
+function setupTasksListener() {
+    if (tasksUnsubscribe) tasksUnsubscribe();
+    
+    const q = query(
+        collection(db, 'tasks'),
+        where('status', '==', 'active')
+    );
+    
+    tasksUnsubscribe = onSnapshot(q, (snapshot) => {
+        tasksCache = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            data.id = doc.id;
+            tasksCache.push(data);
+        });
+        
+        renderTasks();
+    }, (error) => {
+        console.error('Tasks listener error:', error);
+    });
+}
+
+// ===== UPDATE UI =====
+function updateUI() {
+    if (!userData) return;
+    
+    $('coinAmount').textContent = userData.coins || 0;
+    $('walletBalance').textContent = userData.coins || 0;
+    $('walletBonus').textContent = userData.bonusCoins || 0;
+    $('levelBadge').textContent = 'Lv.' + (userData.level || 1);
+    $('statTasks').textContent = userData.tasksCompleted || 0;
+    $('statCoins').textContent = userData.coins || 0;
+    $('statStreak').textContent = userData.streakDays || 0;
+    $('statLevel').textContent = userData.level || 1;
+    $('profileName').textContent = userData.name || 'User';
+    $('profileEmail').textContent = userData.email || '';
+    $('profileLevel').textContent = userData.level || 1;
+    $('profileXP').textContent = userData.xp || 0;
+    $('referralCodeText').textContent = userData.referralCode || '';
+    
+    const initial = (userData.name || 'U').charAt(0).toUpperCase();
+    $('userAvatar').textContent = initial;
+    $('profileAvatar').textContent = initial;
+    
+    // Load quests
+    loadQuests();
+}
+
+// ===== RENDER TASKS =====
+function renderTasks() {
+    const categoryFilter = $('taskCategoryFilter').value;
+    let tasks = tasksCache;
+    
+    if (categoryFilter !== 'all') {
+        tasks = tasks.filter(t => t.category === categoryFilter);
+    }
+    
+    const sorted = [...tasks].sort((a, b) => (b.rewardCoins || 0) - (a.rewardCoins || 0));
+    const recommended = sorted.slice(0, 6);
+    
+    renderTaskGrid('recommendedTasks', recommended);
+    renderTaskGrid('allTasks', tasks);
+}
+
+function renderTaskGrid(containerId, tasks) {
+    const container = $(containerId);
+    if (!tasks || tasks.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">📭</div>
+                <p>No tasks available right now</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = tasks.map(task => `
+        <div class="task-card" data-task-id="${task.id}">
+            <div class="category-tag">${task.category || 'General'}</div>
+            <h3>${task.title || 'Untitled'}</h3>
+            <p>${task.description || 'Complete this task to earn coins'}</p>
+            <div class="task-meta">
+                <span class="reward">🪙 ${task.rewardCoins || 0}</span>
+                <span class="status ${task.status || 'active'}">${task.status || 'Active'}</span>
+            </div>
+        </div>
+    `).join('');
+    
+    // Add click listeners
+    container.querySelectorAll('.task-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const taskId = card.dataset.taskId;
+            openTask(taskId);
+        });
+    });
+}
+
+// ===== OPEN TASK =====
+function openTask(taskId) {
+    const task = tasksCache.find(t => t.id === taskId);
+    if (!task) return;
+    
+    currentTask = task;
+    $('modalCategory').textContent = task.category || 'General';
+    $('modalTitle').textContent = task.title || 'Task';
+    $('modalReward').textContent = `🪙 ${task.rewardCoins || 0} coins`;
+    $('modalDesc').textContent = task.description || 'Complete this task to earn coins.';
+    $('modalTime').textContent = task.requiredTime ? `${task.requiredTime}s` : 'N/A';
+    $('modalStatus').textContent = task.status || 'Active';
+    
+    $('taskModal').classList.add('show');
+}
+
+// ===== CLOSE TASK MODAL =====
+$('closeTaskModal').addEventListener('click', () => {
+    $('taskModal').classList.remove('show');
+});
+
+$('taskModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+        $('taskModal').classList.remove('show');
+    }
+});
+
+// ===== START TASK =====
+$('modalStartBtn').addEventListener('click', startTask);
+
+function startTask() {
+    if (!currentTask || !currentUser) return;
+    
+    $('taskModal').classList.remove('show');
+    
+    $('trackingTitle').textContent = `⏳ ${currentTask.title || 'Task'}`;
+    $('trackingDesc').textContent = currentTask.description || 'Complete the task below';
+    $('trackingTarget').textContent = `Target: ${currentTask.targetUrl || currentTask.title || 'Task'}`;
+    $('trackingCompleteBtn').disabled = true;
+    
+    const requiredTime = currentTask.requiredTime || 10;
+    trackingTimeLeft = requiredTime;
+    $('trackingTimer').textContent = `${trackingTimeLeft}s`;
+    
+    if (trackingInterval) clearInterval(trackingInterval);
+    trackingInterval = setInterval(() => {
+        trackingTimeLeft--;
+        $('trackingTimer').textContent = `${trackingTimeLeft}s`;
+        
+        if (trackingTimeLeft <= 0) {
+            clearInterval(trackingInterval);
+            $('trackingCompleteBtn').disabled = false;
+            $('trackingTimer').textContent = '✅ Done!';
+        }
+    }, 1000);
+    
+    $('trackingModal').classList.add('show');
+    
+    // Log task start
+    addDoc(collection(db, 'taskCompletions'), {
+        userId: currentUser.uid,
+        taskId: currentTask.id,
+        taskType: currentTask.taskType || 0,
+        status: 'in_progress',
+        startedAt: serverTimestamp(),
+        ipAddress: 'client',
+        deviceId: 'browser'
+    });
+}
+
+// ===== CLOSE TRACKING MODAL =====
+$('cancelTrackingBtn').addEventListener('click', closeTrackingModal);
+
+function closeTrackingModal() {
+    $('trackingModal').classList.remove('show');
+    if (trackingInterval) {
+        clearInterval(trackingInterval);
+        trackingInterval = null;
+    }
+}
+
+$('trackingModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+        closeTrackingModal();
+    }
+});
+
+// ===== COMPLETE TASK =====
+$('trackingCompleteBtn').addEventListener('click', completeTracking);
+
+async function completeTracking() {
+    if (!currentTask || !currentUser) return;
+    
+    try {
+        $('trackingCompleteBtn').disabled = true;
+        $('trackingCompleteBtn').textContent = 'Processing...';
+        
+        const reward = currentTask.rewardCoins || 10;
+        
+        // Credit user
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+            coins: increment(reward),
+            tasksCompleted: increment(1),
+            xp: increment(Math.floor(reward / 2))
+        });
+        
+        // Log transaction
+        await addDoc(collection(db, 'walletTransactions'), {
+            userId: currentUser.uid,
+            type: 'task_reward',
+            amount: reward,
+            sourceId: currentTask.id,
+            status: 'completed',
+            timestamp: serverTimestamp()
+        });
+        
+        // Check level up
+        await checkLevelUp(currentUser.uid);
+        
+        closeTrackingModal();
+        showToast(`✅ Task completed! +${reward} coins`);
+        
+    } catch (error) {
+        console.error('Error completing task:', error);
+        showToast('❌ Error completing task');
+        $('trackingCompleteBtn').disabled = false;
+        $('trackingCompleteBtn').textContent = 'Complete Task';
+    }
+}
+
+// ===== CHECK LEVEL UP =====
+async function checkLevelUp(userId) {
+    const levelData = [
+        { level: 1, xp: 0, multiplier: 1 },
+        { level: 2, xp: 100, multiplier: 1.1 },
+        { level: 3, xp: 250, multiplier: 1.2 },
+        { level: 4, xp: 500, multiplier: 1.3 },
+        { level: 5, xp: 1000, multiplier: 1.5 },
+        { level: 6, xp: 2000, multiplier: 1.7 },
+        { level: 7, xp: 4000, multiplier: 2 },
+        { level: 8, xp: 8000, multiplier: 2.5 },
+        { level: 9, xp: 15000, multiplier: 3 },
+        { level: 10, xp: 30000, multiplier: 5 }
+    ];
+    
+    try {
+        const docSnap = await getDoc(doc(db, 'users', userId));
+        if (!docSnap.exists()) return;
+        const data = docSnap.data();
+        const currentXP = data.xp || 0;
+        let newLevel = data.level || 1;
+        
+        for (const lv of levelData) {
+            if (currentXP >= lv.xp && lv.level > newLevel) {
+                newLevel = lv.level;
+            }
+        }
+        
+        if (newLevel !== data.level) {
+            await updateDoc(doc(db, 'users', userId), { level: newLevel });
+            showToast(`🎉 Level Up! You're now Level ${newLevel}`);
+        }
+    } catch (error) {
+        console.error('Error checking level:', error);
+    }
+}
+
+// ===== LOAD QUESTS =====
+function loadQuests() {
+    const questData = [
+        { type: 'Beginner', tasks: 5, reward: 150, bonus: 50 },
+        { type: 'Explorer', tasks: 10, reward: 400, bonus: 100 },
+        { type: 'Adventurer', tasks: 15, reward: 800, bonus: 200 },
+        { type: 'Hero', tasks: 20, reward: 1500, bonus: 500 },
+        { type: 'Legend', tasks: 30, reward: 3000, bonus: 1000 },
+        { type: 'Mythic', tasks: 50, reward: 8000, bonus: 2000 },
+        { type: 'God', tasks: 100, reward: 20000, bonus: 5000 }
+    ];
+    
+    const completedTasks = userData?.tasksCompleted || 0;
+    
+    const container = $('questList');
+    container.innerHTML = questData.map(quest => {
+        const progress = Math.min(completedTasks / quest.tasks * 100, 100);
+        const isComplete = completedTasks >= quest.tasks;
+        
+        return `
+            <div class="quest-card" style="${isComplete ? 'border-color:var(--success);' : ''}">
+                <div class="quest-header">
+                    <h3>${quest.type} Quest</h3>
+                    <span class="quest-reward">🪙 ${quest.reward} + ${quest.bonus} bonus</span>
+                </div>
+                <div style="font-size:14px;color:var(--text-muted);">
+                    ${completedTasks} / ${quest.tasks} tasks
+                    ${isComplete ? '✅ Completed!' : ''}
+                </div>
+                <div class="quest-progress">
+                    <div class="text">${Math.round(progress)}%</div>
+                    <div class="bar">
+                        <div class="fill" style="width:${Math.min(progress, 100)}%;"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ===== LOAD LEADERBOARD =====
+async function loadLeaderboard() {
+    try {
+        const snapshot = await getDocs(query(
+            collection(db, 'users'),
+            orderBy('coins', 'desc'),
+            limit(50)
+        ));
+        
+        const container = $('leaderboardList');
+        let html = '';
+        let rank = 1;
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+            const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+            
+            html += `
+                <div class="leaderboard-item">
+                    <div class="rank ${rankClass}">${medal}</div>
+                    <div class="info">
+                        <div class="name">${data.name || 'User'}</div>
+                        <div class="level">Level ${data.level || 1}</div>
+                    </div>
+                    <div class="coins">🪙 ${data.coins || 0}</div>
+                </div>
+            `;
+            rank++;
+        });
+        
+        container.innerHTML = html || '<div class="empty-state"><p>No users yet</p></div>';
+    } catch (error) {
+        console.error('Error loading leaderboard:', error);
+    }
+}
+
+// ===== LOAD TRANSACTIONS =====
+async function loadTransactions() {
+    if (!currentUser) return;
+    
+    try {
+        const snapshot = await getDocs(query(
+            collection(db, 'walletTransactions'),
+            where('userId', '==', currentUser.uid),
+            orderBy('timestamp', 'desc'),
+            limit(20)
+        ));
+        
+        const container = $('transactionList');
+        if (snapshot.empty) {
+            container.innerHTML = '<div class="empty-state"><p>No transactions yet</p></div>';
+            return;
+        }
+        
+        let html = '';
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const isPositive = data.type !== 'withdrawal';
+            const sign = isPositive ? '+' : '-';
+            const className = isPositive ? 'positive' : 'negative';
+            const typeNames = {
+                'task_reward': '🎯 Task Reward',
+                'ad_reward': '📺 Ad Reward',
+                'quest_reward': '🎯 Quest Reward',
+                'referral': '👥 Referral Bonus',
+                'withdrawal': '💰 Withdrawal'
+            };
+            
+            const date = data.timestamp?.toDate?.()?.toLocaleDateString() || 'Recent';
+            
+            html += `
+                <div class="transaction-item">
+                    <div class="left">
+                        <div class="type">${typeNames[data.type] || data.type}</div>
+                        <div class="date">${date}</div>
+                    </div>
+                    <div class="right">
+                        <div class="amount ${className}">${sign}${data.amount}</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('Error loading transactions:', error);
+    }
+}
+
+// ===== WATCH AD =====
+$('watchAdBtn').addEventListener('click', watchAd);
+
+async function watchAd() {
+    if (!currentUser) {
+        showToast('Please login first');
+        return;
+    }
+    
+    const today = new Date().toDateString();
+    const snapshot = await getDocs(query(
+        collection(db, 'ads'),
+        where('userId', '==', currentUser.uid)
+    ));
+    
+    let todayCount = 0;
+    snapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.watchedAt?.toDate?.()?.toDateString() === today) {
+            todayCount++;
+        }
+    });
+    
+    if (todayCount >= 20) {
+        showToast('❌ Daily ad limit reached (20 ads)');
+        return;
+    }
+    
+    showToast('📺 Watching ad...');
+    
+    setTimeout(async () => {
+        const reward = 1.5;
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+            coins: increment(reward)
+        });
+        await addDoc(collection(db, 'ads'), {
+            userId: currentUser.uid,
+            network: 'adsterra',
+            duration: 15,
+            reward: reward,
+            status: 'watched',
+            watchedAt: serverTimestamp()
+        });
+        await addDoc(collection(db, 'walletTransactions'), {
+            userId: currentUser.uid,
+            type: 'ad_reward',
+            amount: reward,
+            sourceId: 'ad_watch',
+            status: 'completed',
+            timestamp: serverTimestamp()
+        });
+        
+        showToast(`📺 Ad watched! +${reward} coins`);
+    }, 3000);
+}
+
+// ===== REQUEST WITHDRAWAL =====
+$('withdrawBtn').addEventListener('click', requestWithdrawal);
+
+async function requestWithdrawal() {
+    if (!currentUser) {
+        showToast('Please login first');
+        return;
+    }
+    
+    const balance = userData?.coins || 0;
+    const minWithdrawal = 100;
+    
+    if (balance < minWithdrawal) {
+        showToast(`❌ Minimum withdrawal is ${minWithdrawal} coins`);
+        return;
+    }
+    
+    const amount = prompt(`Enter amount to withdraw (Max: ${balance} coins):`, Math.min(balance, 500));
+    if (!amount) return;
+    
+    const numAmount = parseInt(amount);
+    if (isNaN(numAmount) || numAmount < minWithdrawal || numAmount > balance) {
+        showToast(`❌ Amount must be between ${minWithdrawal} and ${balance}`);
+        return;
+    }
+    
+    try {
+        await addDoc(collection(db, 'withdrawals'), {
+            userId: currentUser.uid,
+            amount: numAmount,
+            method: 'upi',
+            upiId: prompt('Enter your UPI ID:', ''),
+            status: 'pending',
+            createdAt: serverTimestamp()
+        });
+        
+        showToast('✅ Withdrawal request submitted!');
+    } catch (error) {
+        console.error('Error requesting withdrawal:', error);
+        showToast('❌ Error submitting withdrawal');
+    }
+}
+
+// ===== COPY REFERRAL CODE =====
+$('referralCode').addEventListener('click', copyReferralCode);
+
+function copyReferralCode() {
+    const code = $('referralCodeText').textContent;
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(code);
+        showToast('📋 Referral code copied!');
+    }
+}
+
+// ===== LOGOUT =====
+$('logoutBtn').addEventListener('click', logoutUser);
+
+function logoutUser() {
+    if (currentUser) {
+        remove(ref(rtdb, 'online_users/' + currentUser.uid));
+    }
+    signOut(auth);
+}
+
+// ===== NAVIGATION =====
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        const page = tab.dataset.page;
+        
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        $(`page-${page}`).classList.add('active');
+        
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        if (page === 'leaderboard') loadLeaderboard();
+        if (page === 'wallet') loadTransactions();
+    });
+});
+
+$('viewAllTasks').addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.tab[data-page="tasks"]').classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    $('page-tasks').classList.add('active');
+});
+
+// ===== CATEGORY FILTER =====
+$('taskCategoryFilter').addEventListener('change', renderTasks);
+
+// ===== TOAST NOTIFICATION =====
+function showToast(message) {
+    const existing = document.getElementById('toastNotification');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.id = 'toastNotification';
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--bg-card);
+        color: var(--text);
+        padding: 14px 24px;
+        border-radius: 12px;
+        border: 1px solid var(--primary);
+        box-shadow: var(--shadow);
+        z-index: 9999;
+        max-width: 90%;
+        font-weight: 600;
+        animation: fadeUp 0.3s ease;
+        text-align: center;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// ===== SLIDER =====
+let sliderIndex = 0;
+
+function startSlider() {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    
+    setInterval(() => {
+        slides.forEach(s => s.classList.remove('active'));
+        dots.forEach(d => d.classList.remove('active'));
+        
+        sliderIndex = (sliderIndex + 1) % slides.length;
+        slides[sliderIndex].classList.add('active');
+        dots[sliderIndex].classList.add('active');
+    }, 5000);
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+    showAuth('login');
+    startSlider();
+    
+    // Auto-refresh every 30s
+    setInterval(() => {
+        if (currentUser && document.querySelector('#page-leaderboard.active')) {
+            loadLeaderboard();
+        }
+    }, 30000);
+});
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
+        closeTrackingModal();
+    }
+});
+
+console.log('🚀 ULTRA TASK ENGINE v2.0 - Firebase Modular SDK');
+console.log('🔥 Firestore + Realtime Database + Auth (No Storage)');
+console.log('📋 112 Task Types • 9 Categories • 7 Quests');
+</script>
+</body>
+</html>
